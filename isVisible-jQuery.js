@@ -1,10 +1,4 @@
-//isVisible Plugin
 (function( $ ) {
-
-  var whenVisible = null;
-  var whenInvisible = null;
-
-  var target = null;
 
   /*
   * Parameters:
@@ -15,11 +9,22 @@
   */
 
   $.fn.isVisible = function( options ) {
-    target = $( this );
+    var target = $( this );
+    console.log(target);
+
+    if (target.length > 1){
+    	$.each(target,function(index, value){
+    		$(value).isVisible(options);
+    	});
+    	return;
+    }
+
+	target.whenVisible = null;
+	target.whenInvisible = null;
 
     if (options != undefined){
-      whenVisible = ( typeof(options["whenVisible"]) == "function" ) ? options["whenVisible"] : null;
-      whenInvisible = ( typeof(options["whenInvisible"]) == "function" ) ? options["whenInvisible"] : null;
+      target.whenVisible = ( typeof(options["whenVisible"]) == "function" ) ? options["whenVisible"] : null;
+      target.whenInvisible = ( typeof(options["whenInvisible"]) == "function" ) ? options["whenInvisible"] : null;
     }
 
     $(document).ready(function(){
@@ -63,10 +68,10 @@
           viewport.position.left > ( $(target).offset()["left"] + $(target).width() ) ||
           viewport.position.right < ( $(target).offset()["left"] )
       ){
-        if (whenInvisible != null) whenInvisible();
+        if (target.whenInvisible != null) target.whenInvisible(target);
         //console.log("not visible");
       }else{
-        if (whenVisible != null) whenVisible();
+        if (target.whenVisible != null) target.whenVisible(target);
         //console.log("visible");
       }
 
